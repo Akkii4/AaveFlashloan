@@ -18,8 +18,8 @@ abstract contract FlashLoanReceiverBase is IFlashLoanReceiver {
 
     receive() external payable {}
 
-    constructor(address provider) {
-        ADDRESSES_PROVIDER = ILendingPoolAddressesProvider(provider);
-        LENDING_POOL = ILendingPool(ADDRESSES_PROVIDER.getLendingPool());
+    constructor(ILendingPoolAddressesProvider provider) {
+        ADDRESSES_PROVIDER = provider;
+        LENDING_POOL = ILendingPool(provider.getLendingPool());
     }
 }
