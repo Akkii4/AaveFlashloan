@@ -16,7 +16,7 @@ contract AaveFlash is FlashLoanReceiverBase, Ownable {
         address newArbitrageContract
     );
 
-    Arbitrage arbitrageContract;
+    Arbitrage public arbitrageContract;
 
     constructor(
         address _provider,
