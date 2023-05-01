@@ -1,32 +1,37 @@
-// We require the Hardhat Runtime Environment explicitly here. This is optional
-// but useful for running the script in a standalone fashion through `node <script>`.
-//
-// You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
-// will compile your contracts, add the Hardhat Runtime Environment's members to the
-// global scope, and execute the script.
-const hre = require("hardhat");
+// Import required packages
+const { ethers } = require("hardhat");
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
+  // Deploy the Arbitrage contract first
+  const Arbitrage = await ethers.getContractFactory("Arbitrage");
+  const arbitrage = await Arbitrage.deploy(1000); // Set the minRequiredFunds to 1000
 
-  const lockedAmount = hre.ethers.utils.parseEther("0.001");
+  console.log("Arbitrage contract address:", arbitrage.address);
 
-  const Lock = await hre.ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
-
-  await lock.deployed();
-
-  console.log(
-    `Lock with ${ethers.utils.formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
+  // Deploy the AaveFlash contract, passing in the Arbitrage contract address and Aave provider address
+  const AaveFlash = await ethers.getContractFactory("AaveFlash");
+  const aaveFlash = await AaveFlash.deploy(
+    "0xB53C1a33016B2DC2fF3653530bfF1848a515c8c5", // Mainnet Aave provider address
+    arbitrage.address
   );
+
+  console.log("AaveFlash contract address:", aaveFlash.address);
+
+  // Verify the contracts on Etherscan
+  await hre.run("verify:verify", {
+    address: arbitrage.address,
+    constructorArguments: [1000], // Pass in the constructor argument
+    contract: "contracts/Arbitrage.sol:Arbitrage", // Path to the contract source file
+  });
+
+  await hre.run("verify:verify", {
+    address: aaveFlash.address,
+    constructorArguments: [
+      "0xB53C1a33016B2DC2fF3653530bfF1848a515c8c5", // Mainnet Aave provider address
+      arbitrage.address,
+    ], // Pass in the constructor arguments
+    contract: "contracts/AaveFlash.sol:AaveFlash", // Path to the contract source file
+  });
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+main();
