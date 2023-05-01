@@ -36,7 +36,7 @@ contract AaveFlash is FlashLoanReceiverBase, Ownable {
     }
 
     /**
-     * @dev This function must be called only be the LENDING_POOL and takes care of repaying
+     * @dev This function act as callback function and must be called only be the LENDING_POOL and takes care of repaying
      * active debt positions, migrating collateral and incurring new V2 debt token debt.
      *
      * @param assets The array of flash loaned assets used to repay debts.
@@ -78,6 +78,10 @@ contract AaveFlash is FlashLoanReceiverBase, Ownable {
      *  Flash loan wei amount worth of `_asset`
      */
     function flashloan(address _asset, uint256 _amount) public onlyOwner {
+        uint256 tokenBalance = IERC20(_asset).balanceOf(address(this));
+        require(tokenBalance > _amount, "Insufficient Token Balance");
+
+        //Multiple assets (tokens) to borrow
         address[] memory assets = new address[](1);
         assets[0] = _asset;
 
@@ -86,13 +90,17 @@ contract AaveFlash is FlashLoanReceiverBase, Ownable {
 
         address receiverAddress = address(this);
 
+        // Type of Borrowing :
+        // 0 = no debt (flash loan),
+        // 1 = stable rate borrowing,
+        // 2 = variable rate borrowing
+        uint[] memory modes = new uint[](1);
+        modes[0] = 0;
+
+        // Address which will be recieving the debt if not flash loan i.e mode is 1 or 2
         address onBehalfOf = address(this);
         bytes memory params = ""; // add on data to be passed as abi.encode(...)
         uint16 referralCode = 0;
-
-        // 0 = no debt (flash), 1 = stable, 2 = variable
-        uint[] memory modes = new uint[](1);
-        modes[0] = 0;
 
         LENDING_POOL.flashLoan(
             receiverAddress,
