@@ -2,9 +2,7 @@
 pragma solidity ^0.8.16;
 
 import "./Arbitrage.sol";
-import {FlashLoanReceiverBase} from "./aave/abstract/FlashLoanReceiverBase.sol";
-import "./aave/interfaces/ILendingPool.sol";
-import "./aave/interfaces/ILendingPoolAddressProvider.sol";
+import "./aave/abstract/FlashLoanReceiverBase.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -15,11 +13,12 @@ contract AaveFlash is FlashLoanReceiverBase, Ownable {
         address oldArbitrageContract,
         address newArbitrageContract
     );
+    event BorrowedLog(uint256 amount);
 
     Arbitrage public arbitrageContract;
 
     constructor(
-        address _provider,
+        ILendingPoolAddressesProvider _provider,
         address _arbitrageContract
     ) FlashLoanReceiverBase(_provider) {
         arbitrageContract = Arbitrage(_arbitrageContract);
@@ -67,6 +66,7 @@ contract AaveFlash is FlashLoanReceiverBase, Ownable {
 
         // Approve the LendingPool contract allowance to *pull* the owed amount
         for (uint i = 0; i < assets.length; i++) {
+            emit BorrowedLog(amounts[i]);
             uint amountOwing = amounts[i].add(premiums[i]);
             IERC20(assets[i]).approve(address(LENDING_POOL), amountOwing);
         }
