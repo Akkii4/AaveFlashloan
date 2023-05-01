@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!--Head Content-->
+    <title>Flashloan</title>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Links -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <main>
+      <div class="container mt-5">
+        <div class="form-group">
+          <h1 class="title">Flashloan Arbitrage Calculator</h1>
+          <div class="input-group mb-3">
+            <span class="input-group-text">$</span>
+            <input
+              disabled="True"
+              id="arbitrageAmount"
+              type="text"
+              class="form-control"
+              placeholder="Amount to gain in DAI"
+            />
+            <span class="input-group-text">$</span>
+            <input
+              disabled="True"
+              id="requiredAmount"
+              type="text"
+              class="form-control"
+              placeholder="Amount needed to take arbitrage in DAI"
+            />
+          </div>
+          <div class="button-container">
+            <button
+              class="btn btn-primary"
+              id="populateArbitrage"
+              onclick="populateArbitrage();"
+            >
+              Calculate
+            </button>
+          </div>
+        </div>
+        <hr />
+        <h1 class="title">Try with Flashloan</h1>
+        <hr />
+        <div class="form-group">
+          <h2 class="subtitle">Execute a Flashloan</h2>
+          <div class="input-group mb-3">
+            <span class="input-group-text">$</span>
+            <input
+              id="flashloanAmount"
+              type="text"
+              class="form-control"
+              placeholder="Enter amount to flashloan"
+            />
+          </div>
+          <div class="button-container">
+            <button
+              class="btn btn-success"
+              id="flashloan"
+              onclick="flashloan();"
+            >
+              Execute
+            </button>
+          </div>
+        </div>
+        <hr />
+        <div class="form-group">
+          <h2 class="subtitle">Withdraw Assets</h2>
+          <div class="button-container">
+            <button class="btn btn-danger" id="withdraw" onclick="withdraw();">
+              Withdraw
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- Scripts -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script src="middleware.js"></script>
+    <script
+      src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"
+      integrity="sha384-5r5w5oGdC7e3Z6pPZ7WgZJN1c7B+K6x71gQn1n6JzfV6Hg9XOJQFg0//0TzT7LbM"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
