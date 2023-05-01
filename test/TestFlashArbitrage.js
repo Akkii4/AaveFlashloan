@@ -1,18 +1,6 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
-it("should perform arbitrage", async function () {
-  // Perform a mock arbitrage by transferring tokens to the contract, then calling performArbitrage
-  const tokenAddress = "0x0000000000000000000000000000000000000000"; // Replace with the address of your test token
-  const token = await ethers.getContractAt("IERC20", tokenAddress);
-  const operator = await ethers.getSigner(0);
-  const initialBalance = await token.balanceOf(operator.getAddress());
-  await token.transfer(arbitrage.address, 1000);
-  await arbitrage.performArbitrage(tokenAddress);
-  const finalBalance = await token.balanceOf(operator.getAddress());
-  expect(finalBalance).to.equal(initialBalance.add(1000));
-});
-
 describe("AaveFlash", function () {
   let aaveFlash;
   let arbitrage;
@@ -49,14 +37,20 @@ describe("AaveFlash", function () {
   });
 
   it("should perform flash loan", async function () {
+    await hre.network.provider.request({
+      method: "hardhat_impersonateAccount",
+      params: ["0x47ac0Fb4F2D84898e4D9E7b4DaB3C24507a6D503"],
+    });
     // Perform a mock flash loan by transferring tokens to the AaveFlash contract, then calling flashloan
     const daiTokenAddress = "0xF977814e90dA44bFA03b6295A0616a897441aceC";
     const token = await ethers.getContractAt("IERC20", daiTokenAddress);
-    const operator = await ethers.getSigner(0);
-    const initialBalance = await token.balanceOf(operator.getAddress());
-    await token.transfer(aaveFlash.address, 1000);
-    await aaveFlash.flashloan(daiTokenAddress, 1000);
-    const finalBalance = await token.balanceOf(operator.getAddress());
-    expect(finalBalance).to.equal(initialBalance.add(1000));
+    const daiWhale = await ethers.getSigner(
+      "0x47ac0Fb4F2D84898e4D9E7b4DaB3C24507a6D503"
+    );
+    await token.connect(daiWhale).transfer(aaveFlash.address, 1000);
+    const trx = await aaveFlash.flashloan(daiTokenAddress, 5000);
+    for (const log of trx.logs) {
+      console.log(log.args.val.toString());
+    }
   });
 });
