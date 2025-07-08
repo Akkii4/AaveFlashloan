@@ -75,7 +75,7 @@ contract AaveFlash is FlashLoanReceiverBase, Ownable {
     }
 
     /*
-     *  Flash loan wei amount worth of `_asset`
+     *  Request a flash loan for a specified token amount of `_asset`
      */
     function flashloan(address _asset, uint256 _amount) public onlyOwner {
         uint256 tokenBalance = IERC20(_asset).balanceOf(address(this));
